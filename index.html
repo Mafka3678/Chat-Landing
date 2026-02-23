@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeadGen Pro | Высококонверсионный чат-лендинг</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -14,7 +19,7 @@
             color: #f8fafc;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            overflow: auto; /* Allow scrolling if needed */
         }
         
         /* Градиентный фон в стиле современных лендингов */
@@ -33,11 +38,13 @@
         }
 
         .chat-wrapper {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1rem;
+            position: relative;
+            z-index: 10;
         }
 
         .main-card {
