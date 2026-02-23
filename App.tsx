@@ -20,7 +20,7 @@ const App: React.FC = () => {
       setIsTyping(true);
       try {
         const initialMsg = await getBotResponse(ChatStep.WELCOME, "Начни диалог", {});
-        addMessage('bot', initialMsg);
+        addMessage('bot', initialMsg.text, initialMsg.options);
       } catch (e) {
         setHasError(true);
       } finally {
@@ -39,12 +39,13 @@ const App: React.FC = () => {
     }
   }, [messages, isTyping]);
 
-  const addMessage = (role: 'bot' | 'user', content: string) => {
+  const addMessage = (role: 'bot' | 'user', content: string, options?: string[]) => {
     const newMsg: Message = {
       id: Math.random().toString(36).substr(2, 9),
       role,
       content,
-      timestamp: new Date()
+      timestamp: new Date(),
+      options
     };
     setMessages(prev => [...prev, newMsg]);
   };
@@ -84,12 +85,12 @@ const App: React.FC = () => {
     }
 
     try {
-      const botReply = await getBotResponse(nextStep, messageText, updatedLeadData);
+      const botResponse = await getBotResponse(nextStep, messageText, updatedLeadData);
       
       setLeadData(updatedLeadData);
       setCurrentStep(nextStep);
       
-      addMessage('bot', botReply);
+      addMessage('bot', botResponse.text, botResponse.options);
       setIsTyping(false);
       
       if (nextStep === ChatStep.COMPLETED) {
@@ -194,17 +195,17 @@ const App: React.FC = () => {
         <footer className="bg-white px-8 py-8 border-t border-gray-100 z-30">
           {!isSubmitted && (
             <div className="space-y-5">
-              {!isTyping && !hasError && (
+              {!isTyping && !hasError && messages.length > 0 && messages[messages.length - 1].role === 'bot' && messages[messages.length - 1].options && (
                 <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 hide-scrollbar">
-                  {currentStep === ChatStep.BENEFITS && (
-                    <button onClick={() => handleSend("Расскажи подробнее?")} className="chip">Как это работает?</button>
-                  )}
-                  {currentStep === ChatStep.QUALIFICATION_BUDGET && (
-                    <>
-                      <button onClick={() => handleSend("Да, бюджет позволяет")} className="chip-primary">Да, &gt; 50к ₽</button>
-                      <button onClick={() => handleSend("Пока бюджет скромный")} className="chip">Меньше 50к ₽</button>
-                    </>
-                  )}
+                  {messages[messages.length - 1].options?.map((option, idx) => (
+                    <button 
+                      key={idx} 
+                      onClick={() => handleSend(option)} 
+                      className="chip"
+                    >
+                      {option}
+                    </button>
+                  ))}
                 </div>
               )}
 
